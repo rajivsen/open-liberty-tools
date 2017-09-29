@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -141,6 +142,22 @@ public class ConfigurationFile implements IAdaptable, IConfigurationElement {
         public String toString() {
             return "Application[" + getName() + "]";
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null || !(obj instanceof Application))
+                return false;
+            Application otherApp = (Application) obj;
+            return name.equals(otherApp.getName());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int hashCode() {
+            return name.hashCode();
+        }
+
     }
 
     protected URI uri;
@@ -702,14 +719,14 @@ public class ConfigurationFile implements IAdaptable, IConfigurationElement {
         if (Trace.ENABLED)
             Trace.trace(Trace.INFO, "getApplications() - before synchronized block");
 
-        List<Application> list = new ArrayList<Application>();
+        Set<Application> set = new HashSet<Application>();
         Map<String, Boolean> appLabelMap = getAppLabelMap();
         synchronized (configLock) {
             for (String appLabel : ServerExtensionWrapper.getAllApplicationElements()) {
                 List<Element> elements = ConfigUtils.getResolvedElements(getDocument(), getURI(), server, getUserDirectory(), appLabel, Constants.FACTORY_ID);
                 for (Element appElem : elements) {
                     Application app = createApplication(appElem, appLabel, appLabelMap);
-                    list.add(app);
+                    set.add(app);
                 }
             }
         }
@@ -717,7 +734,7 @@ public class ConfigurationFile implements IAdaptable, IConfigurationElement {
         if (Trace.ENABLED)
             Trace.trace(Trace.INFO, "getApplications() - after synchronized block");
 
-        return list.toArray(new Application[list.size()]);
+        return set.toArray(new Application[set.size()]);
     }
 
     private Application createApplication(Element appElem, String appLabel, Map<String, Boolean> appLabelMap) {
