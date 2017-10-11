@@ -1,0 +1,7 @@
+# Debugging options for the com.ibm.etools.liberty.integration.common plugin
+
+# Turn on general debugging
+com.ibm.etools.liberty.integration.common/debug=false
+com.ibm.etools.liberty.integration.common/debug/error=true
+com.ibm.etools.liberty.integration.common/debug/warning=true
+com.ibm.etools.liberty.integration.common/debug/info=true
